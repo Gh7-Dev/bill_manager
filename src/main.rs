@@ -52,6 +52,30 @@ fn remove_bill(bills: &mut HashMap<String, f64>){
     }
 }
 
+fn edit_bill(bills: &mut HashMap<String, f64>){
+    view_bills(bills);
+    let name  = get_input("Enter bill name to edit:");
+    if !bills.contains_key(&name){
+        println!("Bill'{}' not found.", name);
+        return;
+    }
+    let amount_input = get_input("Enter new amount (or press 'b' to go back):");
+    // if b
+    if amount_input.trim() == "b"{
+        println!("Going back.");
+        return;
+    }
+    let amount: f64  = match amount_input.parse(){
+        Ok(value) => value,
+        Err(_) =>{
+            println!("Invalid amount. Please enter a number.");
+            return;
+        }
+    };
+    bills.insert(name.clone(), amount);
+    println!("Bill '{}' updatednto KES {:.2}.", name, amount);
+}
+
 fn main(){
     let mut bills : HashMap<String,  f64> =HashMap::new();
 
@@ -60,14 +84,16 @@ fn main(){
         println!("1. Add bill");
         println!("2. View bills");
         println!("3. Remove bill");
-        println!("Q. Quit");
+        println!("4. Edit bills");
+        println!("q. Quit");
 
         let choice = get_input("Enter choice : ");
         match choice.as_str() {
             "1" => add_bill(&mut bills),
             "2" => view_bills(&bills),
             "3" => remove_bill(&mut bills),
-            "Q" =>  {
+            "4" => edit_bill(&mut bills),
+            "q" =>  {
                 println!("Goodbye");
                 break;
             }
