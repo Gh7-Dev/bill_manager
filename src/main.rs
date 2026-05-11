@@ -1,9 +1,7 @@
 use std::io;
+use std::collections::HashMap;
+
 //creates a struct to store the bills the names and the amount
-struct Bill {
-    name : String,
-    amount : f64,
-}
 
 //prints a prompt and returns whatever the user typed
 fn get_input (prompt: &str) -> String {
@@ -15,7 +13,7 @@ fn get_input (prompt: &str) -> String {
 }
 
 //Borrow Bill Mutably to allow for update of names and amount to the list
-fn add_bill(bills: &mut Vec<Bill>){
+fn add_bill(bills: &mut HashMap<String, f64>){
     let name = get_input("Enter bill name");
     let amount_input = get_input ("Enter amount");
 
@@ -28,35 +26,47 @@ fn add_bill(bills: &mut Vec<Bill>){
         }
     };
     //create a bill and push into the list
-    bills.push(Bill {name, amount});
-    println!("Bill added successfully.");
+    bills.insert(name.clone(), amount);
+    println!("Bill '{}' added successfully.", name);
 }
 
 //Borrow bills immutably and oly rwead the content
-fn view_bills(bills: &Vec<Bill>) {
+fn view_bills(bills: &HashMap<String, f64>) {
     if bills.is_empty(){
         println!("No bills found");
         return;
     }
     println!("\n== Your Bills ==");
-    for bill in bills{
-        println!("{}: KES {:.2}", bill.name, bill.amount );
+    for (name, amount) in bills{
+        println!("{}: KES {:.2}", name, amount );
     }
 } 
 
+fn remove_bill(bills: &mut HashMap<String, f64>){
+    view_bills(bills);
+
+    let name = get_input("Enter bill name to remove");
+    match bills.remove(&name){
+        Some(_) => println!("Bill '{}' removed succesfully", name),
+        None  => println!("Bill '{}' not found", name),
+    }
+}
+
 fn main(){
-    let mut bills : Vec<Bill> = Vec::new();
+    let mut bills : HashMap<String,  f64> =HashMap::new();
 
     loop{
         println!("\n== Bill Manager ==");
         println!("1. Add bill");
         println!("2. View bills");
+        println!("3. Remove bill");
         println!("Q. Quit");
 
         let choice = get_input("Enter choice : ");
         match choice.as_str() {
             "1" => add_bill(&mut bills),
             "2" => view_bills(&bills),
+            "3" => remove_bill(&mut bills),
             "Q" =>  {
                 println!("Goodbye");
                 break;
